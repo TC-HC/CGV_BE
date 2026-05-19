@@ -4,7 +4,7 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
@@ -34,17 +34,17 @@ model Block {
   order     Int
   
   activity    ActiveBlock?
-  achivement  AchievementBlock?
+  achievement  AchievementBlock?
   project     ProjectBlock?
-  learning    LearningBlock
+  learning    LearningBlock?
 }
 
 model ActiveBlock {
   id        Int       @id @default(autoincrement())
   blockID   Int       @unique
-  block     Block     @relation(fields: [blockID], references: [id], OnDelete: Cascade)
+  block     Block     @relation(fields: [blockID], references: [id], onDelete: Cascade)
   title     String
-  role      String    // 해당 블록이 어느 분야에 쓰이는지 나타냄
+  role      String    // 해당 블록이 어느 분야에 속하는지를 표현
   period    String
   detail    String
   proofLink String?
@@ -53,10 +53,10 @@ model ActiveBlock {
 model AchievementBlock {
   id        Int       @id @default(autoincrement())
   blockID   Int       @unique
-  block     Block     @relation(fields: [blockID], references: [id], OnDelete: Cascade)
+  block     Block     @relation(fields: [blockID], references: [id], onDelete: Cascade)
   
   title     String
-  period    String    // 활동 기간
+  date    String    // 활동 기간
   role      String
   detail    String
 }
@@ -64,10 +64,11 @@ model AchievementBlock {
 model ProjectBlock {
   id        Int       @id @default(autoincrement())
   blockID   Int       @unique
-  block     Block     @relation(fields: [blockID], references: [id], OnDelete: Cascade)
+  block     Block     @relation(fields: [blockID], references: [id], onDelete: Cascade)
   
   title     String
   role      String
+  period      String
   detail    String
 }
 
@@ -75,9 +76,10 @@ model ProjectBlock {
 model LearningBlock {
   id        Int       @id @default(autoincrement())
   blockID   Int       @unique
-  block     Block     @relation(fields: [blockID], references: [id], OnDelete: Cascade)
+  block     Block     @relation(fields: [blockID], references: [id], onDelete: Cascade)
   
   title     String
   role      String
+  class     String
   detail    String
 }

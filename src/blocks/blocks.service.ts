@@ -1,11 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBlockDto } from './dto/create-block.dto';
 import { UpdateBlockDto } from './dto/update-block.dto';
+import { PrismaService } from '../../prisma/prisma.service';
+import { BlockType } from '../../generated/prisma';
 
 @Injectable()
 export class BlocksService {
-  create(createBlockDto: CreateBlockDto) {
-    return 'This action adds a new block';
+  constructor(private readonly prisma: PrismaService) {}
+  
+  async create(userID: number, createBlockDto: CreateBlockDto) {
+    const { type, order, activity, achievement, project, learning } = createBlockDto;
+
+    return this.prisma.block.create({
+      data: {
+        userID: userID,
+        type,
+        order,
+      }
+    })
   }
 
   findAll() {

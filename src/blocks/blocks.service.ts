@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBlockDto } from './dto/create-block.dto';
 import { UpdateBlockDto } from './dto/update-block.dto';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -16,23 +16,77 @@ export class BlocksService {
         userID: userID,
         type,
         order,
-      }
-    })
+        ...(type === BlockType.Activity && activity && { activity: { create: activity } }),
+        ...(type === BlockType.Achievement && achievement && { achievement: { create: achievement } }),
+        ...(type === BlockType.Project && project && { project: {create: project}}),
+        ...(type === BlockType.Learning && learning && { learning: {create: learning}}),
+      },
+      include: {
+        activity: true,
+        achievement: true,
+        project: true,
+        learning: true,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all blocks`;
+  async findAll(userID: number) {
+    return this.prisma.block.findMany({
+      where: { userID: userID },
+      orderBy: { order: 'asc' },
+      include: {
+        activity: true,
+        achievement: true,
+        project: true,
+        learning: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} block`;
+  async findOne(id: number) {
+    const block = await this.prisma.block.findUnique({
+      where: { id },
+      include: {
+        activity: true,
+        achivement: true,
+        project: true,
+        learning: true,
+      },
+    });
+
+    if(!block) {
+      throw new NotFoundException('존재하지 않는 블록입니다. (ID: ${id})');
+    }
+    return block;
   }
 
-  update(id: number, updateBlockDto: UpdateBlockDto) {
-    return `This action updates a #${id} block`;
+  async update(id: number, updateBlockDto: UpdateBlockDto) {
+    const exBlock = await this.findOne(id);
+    const { type, order, activity, achievement, project, learning } = updateBlockDto;
+
+    return this.prisma.block.update({
+      where: { id },
+      data: {
+        order,
+        ...(type === BlockType.Activity && activity && { activity: { create: activity } }),
+        ...(type === BlockType.Achievement && achievement && { achievement: { create: achievement } }),
+        ...(type === BlockType.Project && project && { project: {create: project}}),
+        ...(type === BlockType.Learning && learning && { learning: {create: learning}}),
+      },
+      include: {
+        activity: true,
+        achievement: true,
+        project: true,
+        learning: true,
+      },
+    });
+
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} block`;
+  async remove(id: number) {
+    await this.findOne(id);
+    return this.prisma.block.delete({
+      where: { id },
+    });
   }
 }

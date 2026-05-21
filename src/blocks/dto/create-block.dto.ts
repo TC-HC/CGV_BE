@@ -32,7 +32,7 @@ export class CreateActiveBlockDto {
 
     @ApiProperty({ "description": "Link that can prove the activity"})
     @IsUrl()
-    proofLink: String | undefined = "http://..."
+    proofLink: string | undefined = "http://..."
 }
 
 export class CreateAchievementBlockDto {
@@ -79,6 +79,10 @@ export class CreateLearningBlockDto {
     @ApiProperty({ description: "The role of the learning" })
     @IsString()
     role: string = "New Role";
+
+    @ApiProperty({ description: "The subject of the class"})
+    @IsString()
+    class: string = "New Class";
 
     @ApiProperty({ description: "The class of the learning" })
     @IsString()

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBlockDto } from './dto/create-block.dto';
 import { UpdateBlockDto } from './dto/update-block.dto';
 import { PrismaService } from '../../prisma/prisma.service';
-import { BlockType } from '../../generated/prisma';
+import { BlockType } from '@prisma/client';
 
 @Injectable()
 export class BlocksService {
@@ -48,7 +48,7 @@ export class BlocksService {
       where: { id },
       include: {
         activity: true,
-        achivement: true,
+        achievement: true,
         project: true,
         learning: true,
       },

@@ -5,7 +5,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -56,7 +55,7 @@ model AchievementBlock {
   block     Block     @relation(fields: [blockID], references: [id], onDelete: Cascade)
   
   title     String
-  date    String    // 활동 기간
+  date      String    // 활동 기간
   role      String
   detail    String
 }

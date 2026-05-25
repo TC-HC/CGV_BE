@@ -1,7 +1,7 @@
 import { IsString, IsNumber, IsEnum, IsOptional, IsUrl, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { BlockType } from 'generated/prisma';
+import { BlockType } from '@prisma/client';
 
 export class CreateBaseBlockDto {
     @ApiProperty({ description: "The type of the block", enum: BlockType })

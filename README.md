@@ -24,6 +24,32 @@
 
 ## 실행 방법
 
+### Docker로 실행
+
+로컬에 Node.js/npm이 없어도 Docker만 설치되어 있으면 BE와 PostgreSQL을 함께 실행할 수 있습니다.
+
+```bash
+docker compose up --build
+```
+
+위 명령은 `CGV_BE` 폴더에서 실행합니다. 컨테이너 시작 시 Prisma Client 생성과 migration 반영을 자동으로 수행합니다.
+
+서버가 실행되면 기본 주소는 `http://localhost:3000`이고, Swagger 문서는 `http://localhost:3000/api`에서 확인할 수 있습니다.
+
+중지:
+
+```bash
+docker compose down
+```
+
+DB 데이터까지 초기화하려면:
+
+```bash
+docker compose down -v
+```
+
+### 로컬 npm으로 실행
+
 ```bash
 npm install
 ```

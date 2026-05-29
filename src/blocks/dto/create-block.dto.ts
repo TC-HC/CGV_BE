@@ -1,120 +1,94 @@
-import { IsString, IsNumber, IsEnum, IsOptional, IsUrl, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
-import { BlockType } from '@prisma/client';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsBoolean,
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Min,
+} from 'class-validator';
 
-export class CreateBaseBlockDto {
-    @ApiProperty({ description: "The type of the block", enum: BlockType })
-    @IsEnum(BlockType)
-    type: BlockType = "Project";
+export const BLOCK_TYPES = ['activity', 'achievement', 'project', 'learning'] as const;
+export const LEARNING_CONTENT_TYPES = ['강의', '스터디', '논문', '기타'] as const;
 
-    @ApiProperty({ description: "The order of the block" })
-    @IsNumber()
-    order: number = 1;
-}
+export class CreateBlockDto {
+  @ApiProperty({ enum: BLOCK_TYPES, example: 'project', description: 'FE block.type 값' })
+  @IsIn(BLOCK_TYPES)
+  type: string = 'project';
 
-export class CreateActiveBlockDto {
-    @ApiProperty({ description: "The title of the activity"})
-    @IsString()
-    title: string = "New Activity";
+  @ApiPropertyOptional({ example: 0, description: '섹션 안에서의 표시 순서. 생략하면 맨 뒤에 추가됩니다.' })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  order?: number;
 
-    @ApiProperty({ description: "The role of the activity" })
-    @IsString()
-    role: string = "New Role";
+  @ApiProperty({ example: 'CV Block 플랫폼' })
+  @IsString()
+  title: string = '새 블록';
 
-    @ApiProperty({ "description": "The period of the activity" })
-    @IsString()
-    period: string = "0000/00/00 - 0000/00/00"
+  @ApiPropertyOptional({ example: '2024.03 - 2024.12' })
+  @IsOptional()
+  @IsString()
+  period?: string;
 
-    @ApiProperty({ "description": "The details of the activity" })
-    @IsString()
-    detail: string = "Detail text..."
+  @ApiPropertyOptional({ example: '백엔드 개발' })
+  @IsOptional()
+  @IsString()
+  role?: string;
 
-    @ApiProperty({ "description": "Link that can prove the activity"})
-    @IsUrl()
-    proofLink: string | undefined = "http://..."
-}
+  @ApiPropertyOptional({ example: '이력서를 블록 단위로 구성하는 플랫폼 개발' })
+  @IsOptional()
+  @IsString()
+  summary?: string;
 
-export class CreateAchievementBlockDto {
-    @ApiProperty({ description: "The title of the achievement" })
-    @IsString()
-    title: string = "New Project";
+  @ApiPropertyOptional({ example: 'NestJS와 Prisma 기반 API 서버 설계' })
+  @IsOptional()
+  @IsString()
+  detail?: string;
 
-    @ApiProperty({ description: "The role of the achievement" })
-    @IsString()
-    role: string = "New Role";
+  @ApiPropertyOptional({ example: '1위 (최우수상)' })
+  @IsOptional()
+  @IsString()
+  result?: string;
 
-    @ApiProperty({ description: "The date of achievement" })
-    @IsString()
-    date: string = "0000/00/00"
+  @ApiPropertyOptional({ example: '2024.06' })
+  @IsOptional()
+  @IsString()
+  date?: string;
 
-    @ApiProperty({ description: "The details of the achievement" })
-    @IsString()
-    detail: string = "Detail text..."
-}
+  @ApiPropertyOptional({ example: 'https://example.com/certificate' })
+  @IsOptional()
+  @IsUrl()
+  certLink?: string;
 
-export class CreateProjectBlockDto {
-    @ApiProperty({ description: "The title of the project" })
-    @IsString()
-    title: string = "New Project";
+  @ApiPropertyOptional({ example: 'https://example.com/certificate.png' })
+  @IsOptional()
+  @IsUrl()
+  certImageUrl?: string;
 
-    @ApiProperty({ description: "The role of the project" })
-    @IsString()
-    role: string = "New Role";
+  @ApiPropertyOptional({ example: 'React · NestJS · PostgreSQL' })
+  @IsOptional()
+  @IsString()
+  stack?: string;
 
-    @ApiProperty({ description: "The period of the project" })
-    @IsString()
-    period: string = "0000/00/00 - 0000/00/00"
+  @ApiPropertyOptional({ example: 'https://github.com/example/cgv' })
+  @IsOptional()
+  @IsUrl()
+  link?: string;
 
-    @ApiProperty({ description: "The details of the project" })
-    @IsString()
-    detail: string = "Detail text..."
-}
+  @ApiPropertyOptional({ enum: LEARNING_CONTENT_TYPES, example: '강의' })
+  @IsOptional()
+  @IsIn(LEARNING_CONTENT_TYPES)
+  contentType?: string;
 
-export class CreateLearningBlockDto {
-    @ApiProperty({ description: "The title of the learning" })
-    @IsString()
-    title: string = "New Learning";
+  @ApiPropertyOptional({ example: '💻', description: '블록별 커스텀 이모지. 생략하면 FE가 type 기본값을 사용합니다.' })
+  @IsOptional()
+  @IsString()
+  emoji?: string;
 
-    @ApiProperty({ description: "The role of the learning" })
-    @IsString()
-    role: string = "New Role";
-
-    @ApiProperty({ description: "The subject of the class"})
-    @IsString()
-    class: string = "New Class";
-
-    @ApiProperty({ description: "The class of the learning" })
-    @IsString()
-    period: string = "Course/Study Group/Research Paper/etc..."
-
-    @ApiProperty({ description: "The details of the learning" })
-    @IsString()
-    detail: string = "Detail text..."
-}
-
-export class CreateBlockDto extends CreateBaseBlockDto {
-    @ApiProperty({ description: 'Activity block data', type: CreateActiveBlockDto, required: false} )
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => CreateActiveBlockDto)
-    activity?: CreateActiveBlockDto;
-
-    @ApiProperty({ description: 'Achievement block data', type: CreateAchievementBlockDto, required: false} )
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => CreateAchievementBlockDto)
-    achievement?: CreateAchievementBlockDto;
-
-    @ApiProperty({ description: 'Project block data', type: CreateProjectBlockDto, required: false} )
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => CreateProjectBlockDto)
-    project?: CreateProjectBlockDto;
-
-    @ApiProperty({ description: 'Learning block data', type: CreateLearningBlockDto, required: false} )
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => CreateLearningBlockDto)
-    learning?: CreateLearningBlockDto;
+  @ApiPropertyOptional({ example: true, description: '공유 프로필에서 노출할지 여부' })
+  @IsOptional()
+  @IsBoolean()
+  isPublic?: boolean = true;
 }

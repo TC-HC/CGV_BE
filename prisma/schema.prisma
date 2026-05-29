@@ -1,7 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Prisma schema for the CGV CV block API.
+// DATABASE_URL is loaded from prisma.config.ts and consumed by Prisma's pg adapter.
 
 generator client {
   provider = "prisma-client-js"
@@ -11,74 +9,58 @@ datasource db {
   provider = "postgresql"
 }
 
-enum BlockType {
-  Activity
-  Achievement
-  Project
-  Learning
+model User {
+  id          Int       @id @default(autoincrement())
+  name        String
+  tagline     String?
+  bio         String?
+  email       String?
+  github      String?
+  profileType String    @default("dev")
+  viewMode    String    @default("list")
+  shareSlug   String    @unique @default(uuid())
+  isPublic    Boolean   @default(true)
+  sections    Section[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
-model User {
-  id        Int       @id @default(autoincrement())
-  name      String?
-  subject   String
+model Section {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  category  String   @default("기타")
+  order     Int      @default(0)
   blocks    Block[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, order])
 }
 
 model Block {
-  id        Int       @id @default(autoincrement())
-  userID    Int
-  user      User      @relation(fields: [userID], references: [id], onDelete: Cascade)
-  type      BlockType
-  order     Int
-  
-  activity    ActiveBlock?
-  achievement  AchievementBlock?
-  project     ProjectBlock?
-  learning    LearningBlock?
-}
+  id           Int      @id @default(autoincrement())
+  sectionId    Int
+  section      Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  type         String
+  order        Int      @default(0)
+  title        String
+  period       String?
+  role         String?
+  summary      String?
+  detail       String?
+  result       String?
+  date         String?
+  certLink     String?
+  certImageUrl String?
+  stack        String?
+  link         String?
+  contentType  String?
+  emoji        String?
+  isPublic     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-model ActiveBlock {
-  id        Int       @id @default(autoincrement())
-  blockID   Int       @unique
-  block     Block     @relation(fields: [blockID], references: [id], onDelete: Cascade)
-  title     String
-  role      String    // 해당 블록이 어느 분야에 속하는지를 표현
-  period    String
-  detail    String
-  proofLink String?
-}
-
-model AchievementBlock {
-  id        Int       @id @default(autoincrement())
-  blockID   Int       @unique
-  block     Block     @relation(fields: [blockID], references: [id], onDelete: Cascade)
-  
-  title     String
-  date      String    // 활동 기간
-  role      String
-  detail    String
-}
-
-model ProjectBlock {
-  id        Int       @id @default(autoincrement())
-  blockID   Int       @unique
-  block     Block     @relation(fields: [blockID], references: [id], onDelete: Cascade)
-  
-  title     String
-  role      String
-  period      String
-  detail    String
-}
-
-
-model LearningBlock {
-  id        Int       @id @default(autoincrement())
-  blockID   Int       @unique
-  block     Block     @relation(fields: [blockID], references: [id], onDelete: Cascade)
-  
-  title     String
-  role      String
-  class     String
-  detail    String
+  @@index([sectionId, order])
 }

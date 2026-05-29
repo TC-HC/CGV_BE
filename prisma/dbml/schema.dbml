@@ -1,0 +1,81 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id Int [pk, increment]
+  name String [unique]
+  subject String [not null]
+  blocks Block [not null]
+  password String [not null]
+}
+
+Table Block {
+  id Int [pk, increment]
+  userID Int [not null]
+  user User [not null]
+  type BlockType [not null]
+  order Int [not null]
+  activity ActiveBlock
+  achievement AchievementBlock
+  project ProjectBlock
+  learning LearningBlock
+}
+
+Table ActiveBlock {
+  id Int [pk, increment]
+  blockID Int [unique, not null]
+  block Block [not null]
+  title String [not null]
+  role String [not null]
+  period String [not null]
+  detail String [not null]
+  proofLink String
+}
+
+Table AchievementBlock {
+  id Int [pk, increment]
+  blockID Int [unique, not null]
+  block Block [not null]
+  title String [not null]
+  date String [not null]
+  role String [not null]
+  detail String [not null]
+}
+
+Table ProjectBlock {
+  id Int [pk, increment]
+  blockID Int [unique, not null]
+  block Block [not null]
+  title String [not null]
+  role String [not null]
+  period String [not null]
+  detail String [not null]
+}
+
+Table LearningBlock {
+  id Int [pk, increment]
+  blockID Int [unique, not null]
+  block Block [not null]
+  title String [not null]
+  role String [not null]
+  class String [not null]
+  detail String [not null]
+}
+
+Enum BlockType {
+  Activity
+  Achievement
+  Project
+  Learning
+}
+
+Ref: Block.userID > User.id [delete: Cascade]
+
+Ref: ActiveBlock.blockID - Block.id [delete: Cascade]
+
+Ref: AchievementBlock.blockID - Block.id [delete: Cascade]
+
+Ref: ProjectBlock.blockID - Block.id [delete: Cascade]
+
+Ref: LearningBlock.blockID - Block.id [delete: Cascade]

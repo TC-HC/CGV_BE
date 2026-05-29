@@ -7,6 +7,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 datasource db {
   provider = "postgresql"
 }
@@ -20,9 +24,10 @@ enum BlockType {
 
 model User {
   id        Int       @id @default(autoincrement())
-  name      String?
+  name      String?   @unique
   subject   String
   blocks    Block[]
+  password  String
 }
 
 model Block {
@@ -33,7 +38,7 @@ model Block {
   order     Int
   
   activity    ActiveBlock?
-  achievement  AchievementBlock?
+  achievement AchievementBlock?
   project     ProjectBlock?
   learning    LearningBlock?
 }
@@ -67,7 +72,7 @@ model ProjectBlock {
   
   title     String
   role      String
-  period      String
+  period    String
   detail    String
 }
 
